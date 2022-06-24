@@ -1,6 +1,6 @@
 'use strict';
 
-window.addEventListener('DOMContentLoaded', () => {
+window.addEventListener('DOMContentLoaded', function() {
 
     //Tabs
 
@@ -44,7 +44,7 @@ window.addEventListener('DOMContentLoaded', () => {
 
     // Timer
 
-    const deadline = '2022-06-23';
+    const deadline = '2022-06-25';
 
     function getTimeRemain(endtime) {
 
@@ -111,22 +111,21 @@ window.addEventListener('DOMContentLoaded', () => {
 
     //Modal
 
-    const btnOpenModal = document.querySelectorAll('[data-modal]'),
-        btnCloseModal = document.querySelector('[data-close]'),
-        modal = document.querySelector('.modal');
+    const modalTrigger = document.querySelectorAll('[data-modal]'),
+          modal = document.querySelector('.modal');
 
 
     // btnOpenModal[0].addEventListener('click', openModal);
     // btnOpenModal[1].addEventListener('click', openModal);
 
-    btnOpenModal.forEach(el => {
+    modalTrigger.forEach(el => {
         el.addEventListener('click', openModal);
     });
 
-    btnCloseModal.addEventListener('click', closeModal);
+  
 
     modal.addEventListener('click', (e) => {
-        if (e.target === modal) {
+        if (e.target === modal || e.target.getAttribute('data-close') == "") {
             closeModal();
         }
     });
@@ -141,10 +140,10 @@ window.addEventListener('DOMContentLoaded', () => {
     function openModal() {
         // modal.style.display = 'block';
 
-        // modal.classList.add('show');
-        // modal.classList.remove('hide');
+        modal.classList.add('show');
+        modal.classList.remove('hide');
 
-        modal.classList.toggle('show');
+        // modal.classList.toggle('show');
         document.body.style.overflow = 'hidden';
         clearInterval(modalTimerId);
     }
@@ -152,11 +151,11 @@ window.addEventListener('DOMContentLoaded', () => {
     function closeModal() {
         // modal.style.display = 'none';
 
-        // modal.classList.add('hide');
-        // modal.classList.remove('show');
+        modal.classList.add('hide');
+        modal.classList.remove('show');
 
-        modal.classList.toggle('show');
-        document.body.style.overflow = 'auto';
+        // modal.classList.toggle('show');
+        document.body.style.overflow = '';
     }
 
     const modalTimerId = setTimeout(openModal, 300000);
@@ -167,7 +166,7 @@ window.addEventListener('DOMContentLoaded', () => {
             window.removeEventListener('scroll', showModalByScroll);
         }
     }
-    // window.addEventListener('scroll', showModalByScroll);
+    window.addEventListener('scroll', showModalByScroll);
 
 
     //Class template
@@ -253,6 +252,7 @@ window.addEventListener('DOMContentLoaded', () => {
 
         render() {
             const element = document.createElement('div');
+
             if(this.classes.length){
                 this.classes.forEach(className => element.classList.add(className));
             } else {
@@ -310,9 +310,9 @@ window.addEventListener('DOMContentLoaded', () => {
     const forms = document.querySelectorAll('form');
 
     const message = {
-        loading: 'Loading',
-        success: 'Thank you! We well call you',
-        failure: 'Something get wrong...',
+        loading: 'img/form/spinner.svg',
+        success: 'Спасибо! Скоро мы с вами свяжемся',
+        failure: 'Что-то пошло не так...',
     };
 
     forms.forEach(item => {
@@ -323,17 +323,22 @@ window.addEventListener('DOMContentLoaded', () => {
         form.addEventListener('submit', (e) => {
             e.preventDefault();
 
-            const statusMessage = document.createElement('div');
-            statusMessage.classList.add('status');
-            statusMessage.textContent = message.loading;
-            form.append(statusMessage);
+            let statusMessage = document.createElement('img');
+            statusMessage.src = message.loading;
+            statusMessage.style.cssText = `
+                display: block;
+                margin: 0 auto;
+            `;
+            form.insertAdjacentElement('afterend', statusMessage);
 
             const request = new XMLHttpRequest();
             request.open('POST', 'server.php');
 
-            request.setRequestHeader('Content-type', 'application/json');
+            request.setRequestHeader('Content-type', 'application/json; charset=utf-8');
             const formData = new FormData(form);
+
             // console.log(formData);
+
             const object = {};
             formData.forEach(function(value, key){
                 object[key] = value;
@@ -346,17 +351,38 @@ window.addEventListener('DOMContentLoaded', () => {
             request.addEventListener('load', () => {
                 if(request.status === 200){
                     console.log(request.response);
-                    statusMessage.textContent = message.success;
+                    showThanksModal(message.success);
+                    statusMessage.remove();
                     form.reset();
-                    setTimeout(() => {
-                        statusMessage.remove();
-                    }, 2000);
                 } else {
-                    statusMessage.textContent = message.failure;
+                    showThanksModal(message.failure);
                 }
             });
         });
     }
 
+    function showThanksModal(message) {
+        const prevModalDialog = document.querySelector('.modal__dialog');
 
+        prevModalDialog.classList.add('hide');
+        openModal();
+
+        const thanksModal = document.createElement('div');
+        thanksModal.classList.add('modal__dialog');
+        thanksModal.innerHTML = `
+            <div class="modal__content">
+                <div class="modal__close" data-close>×</div>
+                <div class="modal__title">${message}</div>
+            </div>
+        `;
+
+        document.querySelector('.modal').append(thanksModal);
+
+        setTimeout(() => {
+            thanksModal.remove();
+            prevModalDialog.classList.add('show');
+            prevModalDialog.classList.remove('hide');
+            closeModal();
+        }, 4000);
+    }
 });
