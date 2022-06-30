@@ -1,6 +1,6 @@
 'use strict';
 
-window.addEventListener('DOMContentLoaded', function() {
+window.addEventListener('DOMContentLoaded', function () {
 
     //Tabs
 
@@ -112,7 +112,7 @@ window.addEventListener('DOMContentLoaded', function() {
     //Modal
 
     const modalTrigger = document.querySelectorAll('[data-modal]'),
-          modal = document.querySelector('.modal');
+        modal = document.querySelector('.modal');
 
 
     // btnOpenModal[0].addEventListener('click', openModal);
@@ -122,7 +122,7 @@ window.addEventListener('DOMContentLoaded', function() {
         el.addEventListener('click', openModal);
     });
 
-  
+
 
     modal.addEventListener('click', (e) => {
         if (e.target === modal || e.target.getAttribute('data-close') == "") {
@@ -253,13 +253,13 @@ window.addEventListener('DOMContentLoaded', function() {
         render() {
             const element = document.createElement('div');
 
-            if(this.classes.length){
+            if (this.classes.length) {
                 this.classes.forEach(className => element.classList.add(className));
             } else {
                 this.element = 'menu__item';
                 this.classes = element.classList.add(this.element);
             }
-            
+
             element.innerHTML = `
                 <img src=${this.src} alt=${this.alt}>
                 <h3 class="menu__item-subtitle">${this.title}</h3>
@@ -327,37 +327,53 @@ window.addEventListener('DOMContentLoaded', function() {
             statusMessage.src = message.loading;
             statusMessage.style.cssText = `
                 display: block;
-                margin: 0 auto;
+                margin: 20 auto;
             `;
             form.insertAdjacentElement('afterend', statusMessage);
 
-            const request = new XMLHttpRequest();
-            request.open('POST', 'server.php');
+            // const request = new XMLHttpRequest();
+            // request.open('POST', 'server.php');
 
-            request.setRequestHeader('Content-type', 'application/json; charset=utf-8');
+            // request.setRequestHeader('Content-type', 'application/json; charset=utf-8');
             const formData = new FormData(form);
-
+            
             // console.log(formData);
 
             const object = {};
-            formData.forEach(function(value, key){
+            formData.forEach(function (value, key) {
                 object[key] = value;
             });
 
-            const json = JSON.stringify(object);
-
-            request.send(json);
-
-            request.addEventListener('load', () => {
-                if(request.status === 200){
-                    console.log(request.response);
+            fetch('server.php', {
+                    method: "POST",
+                    headers: {
+                        'Content-type': 'application/json'
+                    },
+                    body: JSON.stringify(object)
+                })
+                .then(data => data.text())
+                .then(data => {
+                    console.log(data);
                     showThanksModal(message.success);
                     statusMessage.remove();
-                    form.reset();
-                } else {
+                }).catch(() => {
                     showThanksModal(message.failure);
-                }
-            });
+                }).finally(() => {
+                    form.reset();
+                });
+
+            // request.send(json);
+
+            // request.addEventListener('load', () => {
+            //     if (request.status === 200) {
+            //         console.log(request.response);
+            //         showThanksModal(message.success);
+            //         statusMessage.remove();
+            //         form.reset();
+            //     } else {
+            //         showThanksModal(message.failure);
+            //     }
+            // });
         });
     }
 
@@ -385,4 +401,21 @@ window.addEventListener('DOMContentLoaded', function() {
             closeModal();
         }, 4000);
     }
+
+    //Fetch
+
+    // fetch('https://jsonplaceholder.ir/posts', 
+    //     {
+    //         method: 'POST',
+    //         body: JSON.stringify({
+    //             name: 'Alex'
+    //         }),
+    //         headers: {
+    //             'Content-type': 'application/json'
+    //         }
+    //     }
+    //     )
+    //     .then(response => response.json())
+    //     .then(json => console.log(json))
+
 });
