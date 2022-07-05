@@ -336,7 +336,7 @@ window.addEventListener('DOMContentLoaded', function () {
 
             // request.setRequestHeader('Content-type', 'application/json; charset=utf-8');
             const formData = new FormData(form);
-            
+
             // console.log(formData);
 
             const object = {};
@@ -402,8 +402,12 @@ window.addEventListener('DOMContentLoaded', function () {
         }, 4000);
     }
 
-    //Fetch
+    fetch('http://localhost:3000/menu')
+        .then(data => data.json())
+        .then(res => console.log(res));
 
+
+    //Fetch
     // fetch('https://jsonplaceholder.ir/posts', 
     //     {
     //         method: 'POST',
