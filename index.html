@@ -5,6 +5,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Food</title>
+    <link rel="stylesheet" type="text/css"
+        href="https://cdn.jsdelivr.net/npm/cookieconsent@3/build/cookieconsent.min.css" />
     <link rel="stylesheet" href="css/style.css">
 </head>
 
@@ -175,7 +177,8 @@
                 </div>
                 <div class="calculating__choose calculating__choose_big">
                     <div data-ratio="1.2" id="low" class="calculating__choose-item">Низкая активность </div>
-                    <div data-ratio="1.375" id="small" class="calculating__choose-item calculating__choose-item_active">Невысокая
+                    <div data-ratio="1.375" id="small" class="calculating__choose-item calculating__choose-item_active">
+                        Невысокая
                         активность</div>
                     <div data-ratio="1.55" id="medium" class="calculating__choose-item">Умеренная активность</div>
                     <div data-ratio="1.725" id="high" class="calculating__choose-item">Высокая активность</div>
@@ -328,5 +331,56 @@
 
 <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
 <script src="js/script.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/cookieconsent@3/build/cookieconsent.min.js" data-cfasync="false"></script>
+<script>
+    window.cookieconsent.initialise({
+        "palette": {
+            "popup": {
+                "background": "#000"
+            },
+            "button": {
+                "background": "#f1d600"
+            }
+        },
+        "theme": "classic",
+        "position": "bottom-right",
+        "type": "opt-in",
+        "content": {
+            "message": "Используются кукис!",
+            "dismiss": "Отмена",
+            "allow": "Принимаю",
+            "link": "Ссылка"
+        },
+        onInitialise: function (status) {
+            var type = this.options.type;
+            var didConsent = this.hasConsented();
+            if (type == 'opt-in' && didConsent) {
+                console.log('Loading cookies...');
+            }
+            if (type == 'opt-out' && !didConsent) {
+                console.log('Error cookies...');
+            }
+        },
+        onStatusChange: function (status, chosenBefore) {
+            var type = this.options.type;
+            var didConsent = this.hasConsented();
+            if (type == 'opt-in' && didConsent) {
+                console.log('Loading cookies...');
+            }
+            if (type == 'opt-out' && !didConsent) {
+                console.log('Error cookies...');
+            }
+        },
+        onRevokeChoice: function () {
+            var type = this.options.type;
+            if (type == 'opt-in') {
+                console.log('Error cookies...');
+            }
+            if (type == 'opt-out') {
+                console.log('Loading cookies...');
+            }
+        }
+    });
+</script>
 
 </html>
